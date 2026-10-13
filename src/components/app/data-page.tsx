@@ -139,12 +139,13 @@ export function DataPage({
                   {columns.map((c) => (
                     <td key={c.key} className="whitespace-nowrap px-4 py-3">
                       {c.key === "status" && statusOptions ? (
-                        <select className="cursor-pointer appearance-none bg-transparent" value={String(r.status)} onChange={(e) => updateStatus(r, e.target.value)} aria-label="Change status">
-                          {statusOptions.map((o) => <option key={o}>{o}</option>)}
-                        </select>
-                      ) : null}
-                      {c.key === "status" && statusOptions ? <span className="ml-1"><StatusBadge value={String(r.status)} /></span>
-                        : c.badge ? <StatusBadge value={String(r[c.key] ?? "")} />
+                        <span className="inline-flex items-center gap-2">
+                          <StatusBadge value={String(r.status)} />
+                          <select className="cursor-pointer rounded border bg-background px-1 text-xs" value={String(r.status)} onChange={(e) => updateStatus(r, e.target.value)} aria-label="Change status">
+                            {statusOptions.map((o) => <option key={o}>{o}</option>)}
+                          </select>
+                        </span>
+                      ) : c.badge ? <StatusBadge value={String(r[c.key] ?? "")} />
                         : c.format ? c.format(r[c.key], r) : String(r[c.key] ?? "—")}
                     </td>
                   ))}
