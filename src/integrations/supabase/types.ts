@@ -14,7 +14,419 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+          sdk_id: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          parts: Json
+          role: string
+          sdk_id: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+          sdk_id?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "chat_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_threads: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      drivers: {
+        Row: {
+          created_at: string
+          earnings: number | null
+          id: string
+          license: string | null
+          location: string | null
+          name: string
+          phone: string | null
+          rating: number
+          safety: number | null
+          status: string
+          success_rate: number | null
+          trips: number
+          vehicle: string | null
+        }
+        Insert: {
+          created_at?: string
+          earnings?: number | null
+          id: string
+          license?: string | null
+          location?: string | null
+          name: string
+          phone?: string | null
+          rating?: number
+          safety?: number | null
+          status?: string
+          success_rate?: number | null
+          trips?: number
+          vehicle?: string | null
+        }
+        Update: {
+          created_at?: string
+          earnings?: number | null
+          id?: string
+          license?: string | null
+          location?: string | null
+          name?: string
+          phone?: string | null
+          rating?: number
+          safety?: number | null
+          status?: string
+          success_rate?: number | null
+          trips?: number
+          vehicle?: string | null
+        }
+        Relationships: []
+      }
+      fuel_logs: {
+        Row: {
+          cost: number
+          created_at: string
+          id: string
+          litres: number
+          log_date: string
+          station: string | null
+          vehicle: string
+        }
+        Insert: {
+          cost: number
+          created_at?: string
+          id?: string
+          litres: number
+          log_date?: string
+          station?: string | null
+          vehicle: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          id?: string
+          litres?: number
+          log_date?: string
+          station?: string | null
+          vehicle?: string
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          created_at: string
+          location: string | null
+          name: string
+          qty: number
+          sku: string
+          weight: string | null
+        }
+        Insert: {
+          created_at?: string
+          location?: string | null
+          name: string
+          qty?: number
+          sku: string
+          weight?: string | null
+        }
+        Update: {
+          created_at?: string
+          location?: string | null
+          name?: string
+          qty?: number
+          sku?: string
+          weight?: string | null
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          customer: string
+          due: string
+          id: string
+          status: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer: string
+          due: string
+          id: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer?: string
+          due?: string
+          id?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      maintenance: {
+        Row: {
+          cost: number | null
+          created_at: string
+          due: string
+          id: string
+          model: string | null
+          status: string
+          type: string
+          vehicle: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string
+          due: string
+          id?: string
+          model?: string | null
+          status?: string
+          type: string
+          vehicle: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string
+          due?: string
+          id?: string
+          model?: string | null
+          status?: string
+          type?: string
+          vehicle?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          text: string
+          type: string
+          unread: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          text: string
+          type?: string
+          unread?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          text?: string
+          type?: string
+          unread?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shipments: {
+        Row: {
+          created_at: string
+          customer: string
+          destination: string
+          driver: string | null
+          eta: string | null
+          id: string
+          pickup: string
+          price: number
+          priority: string
+          ship_date: string
+          status: string
+          vehicle: string | null
+          weight: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer: string
+          destination: string
+          driver?: string | null
+          eta?: string | null
+          id: string
+          pickup: string
+          price?: number
+          priority?: string
+          ship_date?: string
+          status?: string
+          vehicle?: string | null
+          weight?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer?: string
+          destination?: string
+          driver?: string | null
+          eta?: string | null
+          id?: string
+          pickup?: string
+          price?: number
+          priority?: string
+          ship_date?: string
+          status?: string
+          vehicle?: string | null
+          weight?: string | null
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          status: string
+          subject: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          status?: string
+          subject: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          status?: string
+          subject?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vehicles: {
+        Row: {
+          capacity: string | null
+          created_at: string
+          driver: string | null
+          fuel: number
+          id: string
+          last_service: string | null
+          location: string | null
+          mileage: string | null
+          model: string
+          next_service: string | null
+          number: string
+          odometer: number | null
+          status: string
+          type: string
+        }
+        Insert: {
+          capacity?: string | null
+          created_at?: string
+          driver?: string | null
+          fuel?: number
+          id: string
+          last_service?: string | null
+          location?: string | null
+          mileage?: string | null
+          model: string
+          next_service?: string | null
+          number: string
+          odometer?: number | null
+          status?: string
+          type?: string
+        }
+        Update: {
+          capacity?: string | null
+          created_at?: string
+          driver?: string | null
+          fuel?: number
+          id?: string
+          last_service?: string | null
+          location?: string | null
+          mileage?: string | null
+          model?: string
+          next_service?: string | null
+          number?: string
+          odometer?: number | null
+          status?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      warehouses: {
+        Row: {
+          capacity_used: number
+          city: string
+          created_at: string
+          id: string
+          incoming: number | null
+          name: string
+          outgoing: number | null
+          skus: number | null
+        }
+        Insert: {
+          capacity_used?: number
+          city: string
+          created_at?: string
+          id: string
+          incoming?: number | null
+          name: string
+          outgoing?: number | null
+          skus?: number | null
+        }
+        Update: {
+          capacity_used?: number
+          city?: string
+          created_at?: string
+          id?: string
+          incoming?: number | null
+          name?: string
+          outgoing?: number | null
+          skus?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
