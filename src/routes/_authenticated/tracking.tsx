@@ -1,5 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, ClientOnly } from "@tanstack/react-router";
+import { lazy, Suspense, useState } from "react";
 import { useTable } from "@/hooks/use-table";
 import { PageHeader } from "@/components/app/data-page";
 import { StatusBadge } from "@/components/app/status-badge";
@@ -10,10 +10,7 @@ export const Route = createFileRoute("/_authenticated/tracking")({
   component: Tracking,
 });
 
-const CITY: Record<string, { x: number; y: number }> = {
-  Delhi: { x: 47, y: 10 }, Mumbai: { x: 27, y: 52 }, Pune: { x: 31, y: 57 }, Hyderabad: { x: 46, y: 53 },
-  Vijayawada: { x: 51, y: 60 }, Visakhapatnam: { x: 60, y: 55 }, Chennai: { x: 51, y: 76 }, Bengaluru: { x: 43, y: 73 },
-};
+const IndiaMap = lazy(() => import("@/components/app/india-map"));
 
 function Tracking() {
   const { data: shipments = [] } = useTable("shipments");
@@ -23,22 +20,12 @@ function Tracking() {
     <div>
       <PageHeader title="Live tracking" sub="Shipments on the road right now." />
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-xl border bg-sidebar p-4 shadow-card lg:col-span-2">
-          <svg viewBox="0 0 100 90" className="w-full">
-            {active.map((s) => {
-              const a = CITY[s.pickup], b = CITY[s.destination];
-              if (!a || !b) return null;
-              return <line key={s.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={s.status === "Delayed" ? "var(--caution)" : "var(--sidebar-primary)"} strokeWidth={sel === s.id ? 1 : 0.5} strokeDasharray="1.5 1" opacity={sel && sel !== s.id ? 0.25 : 1} />;
-            })}
-            {Object.entries(CITY).map(([n, c]) => (
-              <g key={n}><circle cx={c.x} cy={c.y} r={1.3} fill="var(--primary)" /><text x={c.x + 2} y={c.y + 1} fontSize={2.6} fill="var(--sidebar-foreground)">{n}</text></g>
-            ))}
-            {active.map((s) => {
-              const a = CITY[s.pickup], b = CITY[s.destination];
-              if (!a || !b) return null;
-              return <circle key={s.id + "t"} r={1.2} fill="var(--sidebar-primary)"><animateMotion dur="8s" repeatCount="indefinite" path={`M${a.x},${a.y} L${b.x},${b.y}`} /></circle>;
-            })}
-          </svg>
+        <div className="rounded-xl border bg-card p-2 shadow-card lg:col-span-2">
+          <ClientOnly fallback={<div className="h-[520px] animate-pulse rounded-lg bg-muted" />}>
+            <Suspense fallback={<div className="h-[520px] animate-pulse rounded-lg bg-muted" />}>
+              <IndiaMap shipments={active} selected={sel} onSelect={(id) => setSel(sel === id ? null : id)} />
+            </Suspense>
+          </ClientOnly>
         </div>
         <div className="space-y-2">
           {active.length === 0 && <p className="text-sm text-muted-foreground">No shipments on the road.</p>}
