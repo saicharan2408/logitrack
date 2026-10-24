@@ -1,7 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
+import { DefaultChatTransport, type UIMessage, type ToolUIPart } from "ai";
+import logo from "@/assets/logo-mark.png";
+import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { Send, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -51,7 +53,7 @@ function Chat({ threadId, initial }: { threadId: string; initial: UIMessage[] })
   const { messages, sendMessage, status, error } = useChat({ id: threadId, messages: initial, transport });
   const busy = status === "submitted" || status === "streaming";
 
-  const submit = (e: React.FormEvent) => {
+  const submit = (e: React.FormEvent | React.KeyboardEvent) => {
     e.preventDefault();
     const text = input.trim();
     if (!text || busy) return;
@@ -66,41 +68,103 @@ function Chat({ threadId, initial }: { threadId: string; initial: UIMessage[] })
     if (data) window.location.assign(`/assistant/${data.id}`);
   };
 
+  const suggestions = ["Which shipments are delayed?", "Show vehicles due for service", "Top drivers by rating", "Unpaid invoices this month"];
+  const ask = (text: string) => { if (!busy) sendMessage({ text }); };
+
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col">
-      <div className="flex items-center justify-between border-b px-6 py-3">
-        <h1 className="font-semibold">AI Assistant</h1>
+    <div className="flex h-[calc(100vh-4rem)] flex-col bg-muted/30">
+      <div className="flex items-center justify-between border-b bg-card px-6 py-3">
+        <div className="flex items-center gap-3">
+          <img src={logo} alt="" className="size-9 rounded-full border bg-background p-1" />
+          <div>
+            <h1 className="text-sm font-semibold leading-tight">LogiTrack Assistant</h1>
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className={`size-2 rounded-full ${busy ? "animate-pulse bg-primary" : "bg-primary/60"}`} />
+              {busy ? "Typing…" : "Online · live fleet data"}
+            </p>
+          </div>
+        </div>
         <Button variant="outline" size="sm" onClick={newChat}><Plus /> New chat</Button>
       </div>
       <Conversation className="flex-1">
-        <ConversationContent>
+        <ConversationContent className="mx-auto w-full max-w-3xl gap-5 px-4 py-6">
           {messages.length === 0 && (
-            <p className="text-center text-muted-foreground">Ask about shipments, vehicles, drivers, inventory or invoices.</p>
+            <div className="flex flex-col items-center gap-4 py-16 text-center">
+              <img src={logo} alt="" className="size-14 rounded-2xl border bg-card p-2 shadow-sm" />
+              <div>
+                <h2 className="text-lg font-semibold">How can I help with operations today?</h2>
+                <p className="text-sm text-muted-foreground">I can look up and update shipments, vehicles, drivers, inventory and invoices.</p>
+              </div>
+              <div className="grid w-full max-w-lg gap-2 sm:grid-cols-2">
+                {suggestions.map((q) => (
+                  <button key={q} onClick={() => ask(q)} className="rounded-xl border bg-card px-4 py-3 text-left text-sm transition-colors hover:bg-accent">{q}</button>
+                ))}
+              </div>
+            </div>
           )}
-          {messages.map((m) => (
-            <Message key={m.id} from={m.role}>
-              <MessageContent>
-                {m.parts.map((p, i) =>
-                  p.type === "text" ? <MessageResponse key={i}>{p.text}</MessageResponse> : null,
+          {messages.map((m) => {
+            const isUser = m.role === "user";
+            return (
+              <div key={m.id} className={`flex items-end gap-2 ${isUser ? "flex-row-reverse" : ""}`}>
+                {isUser ? (
+                  <div className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">You</div>
+                ) : (
+                  <img src={logo} alt="" className="size-8 shrink-0 rounded-full border bg-card p-1" />
                 )}
-              </MessageContent>
-            </Message>
-          ))}
-          {status === "submitted" && <p className="text-sm text-muted-foreground">Thinking…</p>}
-          {error && <p className="text-sm text-destructive">{error.message}</p>}
+                <Message from={m.role} className="max-w-[80%]">
+                  <MessageContent
+                    className={isUser
+                      ? "!rounded-2xl !rounded-br-sm !bg-primary !px-4 !py-2.5 !text-primary-foreground shadow-sm"
+                      : "rounded-2xl rounded-bl-sm border bg-card px-4 py-2.5 shadow-sm"}
+                  >
+                    {m.parts.map((p, i) => {
+                      if (p.type === "text") return isUser
+                        ? <p key={i} className="whitespace-pre-wrap">{p.text}</p>
+                        : <MessageResponse key={i}>{p.text}</MessageResponse>;
+                      if (p.type.startsWith("tool-")) {
+                        const t = p as ToolUIPart;
+                        return (
+                          <Tool key={i} defaultOpen={false} className="mb-0">
+                            <ToolHeader type={t.type} state={t.state} />
+                            <ToolContent>
+                              <ToolInput input={t.input} />
+                              <ToolOutput output={t.output} errorText={t.errorText} />
+                            </ToolContent>
+                          </Tool>
+                        );
+                      }
+                      return null;
+                    })}
+                  </MessageContent>
+                </Message>
+              </div>
+            );
+          })}
+          {status === "submitted" && (
+            <div className="flex items-end gap-2">
+              <img src={logo} alt="" className="size-8 rounded-full border bg-card p-1" />
+              <div className="flex gap-1 rounded-2xl rounded-bl-sm border bg-card px-4 py-3.5">
+                {[0, 150, 300].map((d) => <span key={d} className="size-2 animate-bounce rounded-full bg-muted-foreground" style={{ animationDelay: `${d}ms` }} />)}
+              </div>
+            </div>
+          )}
+          {error && <p className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error.message}</p>}
         </ConversationContent>
         <ConversationScrollButton />
       </Conversation>
-      <form onSubmit={submit} className="flex gap-2 border-t p-4">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask the assistant…"
-          className="flex-1 rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-        />
-        <Button type="submit" disabled={busy || !input.trim()}><Send /> Send</Button>
+      <form onSubmit={submit} className="mx-auto w-full max-w-3xl px-4 pb-4">
+        <div className="flex items-end gap-2 rounded-2xl border bg-card p-2 shadow-sm focus-within:ring-1 focus-within:ring-ring">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(e); } }}
+            rows={1}
+            placeholder="Message the assistant…  (Enter to send, Shift+Enter for new line)"
+            className="max-h-40 min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-sm outline-none"
+          />
+          <Button type="submit" size="icon" className="shrink-0 rounded-xl" disabled={busy || !input.trim()} aria-label="Send"><Send /></Button>
+        </div>
       </form>
-      <Link to="/dashboard" className="sr-only">Back</Link>
     </div>
   );
 }
