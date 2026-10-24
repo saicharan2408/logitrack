@@ -11,7 +11,7 @@ export function useTable<T extends TableName>(table: T, orderBy = "created_at") 
   const qc = useQueryClient();
   useEffect(() => {
     const channel = supabase
-      .channel(`live-${table}`)
+      .channel(`live-${table}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table }, () => qc.invalidateQueries({ queryKey: ["table", table] }))
       .subscribe();
     return () => {

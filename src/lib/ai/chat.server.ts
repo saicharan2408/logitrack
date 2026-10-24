@@ -52,7 +52,7 @@ export async function handleChat(request: Request) {
   const { data: thread } = await sb.from("chat_threads").select("id,title").eq("id", threadId).maybeSingle();
   if (!thread) return json(404, "Conversation not found.");
 
-  const last = messages[messages.length - 1];
+  const last = messages[messages.length - 1]!;
   if (last.role === "user") {
     const { error } = await sb
       .from("chat_messages")
@@ -119,7 +119,7 @@ export async function handleChat(request: Request) {
   };
 
   const result = streamText({
-    model: provider.responses(MODEL),
+    model: provider.responses(MODEL) as never,
     instructions: INSTRUCTIONS,
     messages: await convertToModelMessages(messages),
     tools,
