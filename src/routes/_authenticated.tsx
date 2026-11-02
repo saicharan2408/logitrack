@@ -41,7 +41,7 @@ function AppLayout() {
   const unread = notes.filter((n) => n.unread).length;
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login" });
+    if (!loading && !user) supabase.auth.signInAnonymously();
   }, [loading, user, navigate]);
   useEffect(() => setOpen(false), [path]);
 
@@ -67,9 +67,9 @@ function AppLayout() {
           })}
         </nav>
         <div className="absolute inset-x-0 bottom-0 border-t border-sidebar-border p-3">
-          <div className="truncate px-2 text-xs">{user.email}</div>
-          <button onClick={() => supabase.auth.signOut()} className="mt-2 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm hover:bg-sidebar-accent">
-            <LogOut className="size-4" /> Sign out
+          <div className="truncate px-2 text-xs">{user.email ?? "Guest"}</div>
+          <button onClick={() => supabase.auth.signOut().then(() => navigate({ to: "/" }))} className="mt-2 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-sm hover:bg-sidebar-accent">
+            <LogOut className="size-4" /> Reset session
           </button>
         </div>
       </aside>
