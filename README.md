@@ -135,3 +135,10 @@ This project is currently available for educational and development purposes. Ad
 ---
 
 **LogiTrack — Making logistics smarter, one delivery at a time.**
+
+## Run locally in VS Code (works on ARM PCs: Windows on ARM, Apple Silicon, Linux ARM64)
+1. Install Node.js 20+ (ARM64 build) from nodejs.org, and Git.
+2. Open the project folder in VS Code, then open Terminal → New Terminal.
+3. `npm install`
+4. `npm run dev` and open http://localhost:8080
+The `.env` file must be present (it holds the backend connection). No login is needed — the app starts a guest session automatically.
