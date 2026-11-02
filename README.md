@@ -138,7 +138,11 @@ This project is currently available for educational and development purposes. Ad
 
 ## Run locally in VS Code (works on ARM PCs: Windows on ARM, Apple Silicon, Linux ARM64)
 1. Install Node.js 20+ (ARM64 build) from nodejs.org, and Git.
-2. Open the project folder in VS Code, then open Terminal → New Terminal.
-3. `npm install`
-4. `npm run dev` and open http://localhost:8080
-The `.env` file must be present (it holds the backend connection). No login is needed — the app starts a guest session automatically.
+2. Unzip the project, then open that folder in VS Code (File → Open Folder).
+3. Open Terminal → New Terminal in VS Code and run `npm install`.
+4. Run `npm run dev`, then open http://localhost:8080 in your browser.
+
+Notes:
+- The `.env` file must be present — it holds the connection to the shared backend, so your data is the same as in the published app.
+- No login is needed; the app starts a guest session automatically.
+- The AI Assistant needs `LOVABLE_API_KEY` in the environment to answer. That key is managed by Lovable and is not in this folder, so the assistant only works in the preview and published app unless you add your own key.
