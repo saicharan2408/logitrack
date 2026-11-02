@@ -37,8 +37,8 @@ function Landing() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-2 font-display text-lg font-bold"><img src={logo} alt="" className="size-8" /> LogiTrack</div>
           <div className="flex gap-2">
-            <Button asChild variant="ghost" className="text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><Link to="/login">Sign in</Link></Button>
-            <Button asChild className="bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"><Link to="/signup">Get started</Link></Button>
+            <Button asChild variant="ghost" className="text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><Link to="/dashboard">Open app</Link></Button>
+            <Button asChild className="bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"><Link to="/dashboard">Get started</Link></Button>
           </div>
         </nav>
         <div className="mx-auto max-w-6xl px-6 pb-28 pt-16 md:pt-24">
@@ -46,8 +46,8 @@ function Landing() {
           <h1 className="mt-6 max-w-3xl text-4xl font-bold leading-tight md:text-6xl">Every truck, every parcel, <span className="text-sidebar-primary">live.</span></h1>
           <p className="mt-5 max-w-xl text-lg text-sidebar-foreground">Manage shipments, fleet, drivers and warehouses from one dashboard — with an AI copilot that answers anything in seconds.</p>
           <div className="mt-8 flex gap-3">
-            <Button asChild size="lg" className="bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"><Link to="/signup">Start free <ArrowRight className="size-4" /></Link></Button>
-            <Button asChild size="lg" variant="outline" className="border-sidebar-border bg-transparent text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><Link to="/login">Sign in</Link></Button>
+            <Button asChild size="lg" className="bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"><Link to="/dashboard">Start free <ArrowRight className="size-4" /></Link></Button>
+            <Button asChild size="lg" variant="outline" className="border-sidebar-border bg-transparent text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"><Link to="/dashboard">Open app</Link></Button>
           </div>
         </div>
       </header>
@@ -73,7 +73,7 @@ function Landing() {
               <div className="font-semibold">{p.name}</div>
               <div className="mt-2 font-display text-3xl font-bold">{p.price}<span className="text-sm font-normal text-muted-foreground">{p.price !== "Custom" && " /month"}</span></div>
               <ul className="mt-5 space-y-2 text-sm">{p.f.map((f) => <li key={f} className="flex gap-2"><Check className="size-4 text-success" />{f}</li>)}</ul>
-              <Button asChild className="mt-6 w-full" variant={p.popular ? "default" : "outline"}><Link to="/signup">Choose {p.name}</Link></Button>
+              <Button asChild className="mt-6 w-full" variant={p.popular ? "default" : "outline"}><Link to="/dashboard">Choose {p.name}</Link></Button>
             </div>
           ))}
         </div>
